@@ -49,7 +49,21 @@ namespace Backtrace.Unity.Model.JsonData
             var attributes = new Dictionary<string, object>();
             foreach (BacktraceJProperty keys in jToken)
             {
-                attributes.Add(keys.Name, keys.Value.Value<string>());
+                string toParse = keys.Value.Value<string>();
+                bool value;
+                if(bool.TryParse(toParse, out value))
+                {
+                    attributes.Add(keys.Name, value);
+                    continue;
+                }
+                double doubleValue;
+                if(double.TryParse(toParse, out doubleValue))
+                {
+                    attributes.Add(keys.Name, doubleValue);
+                    continue;
+                }
+
+                attributes.Add(keys.Name, toParse);
             }
             return new BacktraceAttributes()
             {
@@ -67,8 +81,8 @@ namespace Backtrace.Unity.Model.JsonData
                     attr[attribute.Key] = (bool)attribute.Value;
                 }
                 else if (attribute.Value != null && TypeHelper.IsNumeric(attribute.Value.GetType()))
-                {
-                    attr[attribute.Key] = Convert.ToInt64(attribute.Value);
+                { 
+                    attr[attribute.Key] = Convert.ToDouble(attribute.Value);
                 }
                 else
                 {

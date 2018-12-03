@@ -21,7 +21,22 @@ namespace Tests
             Assert.IsTrue(attributes.Attributes.Count > 0);
             yield return null;
         }
+        [UnityTest]
+        public IEnumerator TestCorrectNumericAttributes_CreateCorrectAttributeDictionary_DiffrentNumbers()
+        {
+            var exception = new FileNotFoundException();
+            var reportAttributeKey = "report_attr";
+            var reportAttributeValue = false;
+            var reportAttributes = new Dictionary<string, object>() { { reportAttributeKey, reportAttributeValue } };
+            var exceptionReport = new BacktraceReport(exception, reportAttributes);
+            var attributes = new BacktraceAttributes(exceptionReport, null);
 
+            var json = attributes.ToJson();
+            var deseralizedAttributes = BacktraceAttributes.Deserialize(json);
+            Assert.AreEqual(attributes.Attributes[reportAttributeKey], deseralizedAttributes.Attributes[reportAttributeKey]);
+
+            yield return null;
+        }
         [UnityTest]
         public IEnumerator TestCorrectDictionaryGeneration_CreateCorrectAttributesDictionary_WithDiffrentClientAttributes()
         {
